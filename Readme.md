@@ -7,7 +7,7 @@ The uniforms "u_mouse" and "u_time" are passed when a kernel function is called 
 
 When the display is rendered using a fragment function, a MTLRenderCommandEncoder object is created to pass the uniforms to the vertex and fragment functions. However, for this particular project none of the demos required parameters to be passed to the vertex function. The vertex function has imbedded data which is used to create a rectangular canvas in the range [-1.0, 1.0]. The output of the fragment function is written out to the currentDrawable's (an instance of CAMetalDrawable) texture.
 
-For those demos where the display is rendered to an output texture by calling a (compute) kernel function, an instance of MTLComputeCommandEncoder is created. This object is used to passed the required uniforms to the kernel function. The programmer gets to decided how many pixels can be processed in parallel.
+For those demos where the display is rendered to an output texture by calling a (compute) kernel function, an instance of MTLComputeCommandEncoder is created. This object is used to passed the required uniforms to the kernel function. The programmer gets to decide how many pixels can be processed in parallel.
 The output of the kernel function is written out to a texture.
 
 
@@ -16,7 +16,7 @@ General Notes on how to convert shaders from www.shadertoy.com to MSL
 
 1) Whenever a vec3/float3 is passed as a parameter in a call to sample a texture, an environment map is required. Instead of loading six 2D graphics, we use a special kind of 2D graphic with dimensions 2:1 (aka equiRectangular map) to instantiate the environment map. A special function must be written to use access the 2D texture for environment lookups.
 
-2) Functions like "normalize" can not be used on vectors in program scope because MSL considers such vectors to be in constant address space. Refer to the section "4) Address Spaces" of MSL specification manual. Here's a line from the manual:
+2) Functions like "normalize" can not be used on vectors in program scope because Metal considers such vectors to be in constant address space. Refer to the section "4) Address Spaces" of MSL specification manual. Here's a line from the manual:
 
 The address space for a variable at program scope must be constant.
 
@@ -41,9 +41,17 @@ can be utilised to load equirectangular as well as six 2D cube maps. The graphic
 
 sdPrimitives:
 
-A Metal port of the source code for a reference implementation of basic primitives is at the link:
+This is a Metal port of the source code for a reference implementation of basic primitives at the link:
 
 https://www.shadertoy.com/view/Xds3zN
+
+If a demo encounters the following error message when executing its kernel function,
+
+Execution of the command buffer was aborted due to an error during execution. Invalid Resource (IOAF code 9)
+
+the programmer should try to use a pair of vertex-fragment functions instead.
+
+A kernel function ("compute shader" in OpenGL jargon) will process a number of pixels (specified by the programmer) in parallel whereas a fragment function will process one pixel at a time. As such pixel shaders have a highly restricted parallel programming model in which each fragment is computed completely independently of every other fragment. Resources can not be shared between each invocation of the fragment shader function.
 
 
 A brief descripton of the 3D Signed Distance Field functions used to render these basic primitives is at the link:
@@ -55,16 +63,10 @@ The article is written by Inigo Quilez.
 
 
 
+
 Snail: 
 
-A shader written by Inigo Quilez.
-
-If this demo encounters the following error message when executing its kernel function, then the programmer should try to use a pair of vertex-fragment functions.
-
-Execution of the command buffer was aborted due to an error during execution. Invalid Resource (IOAF code 9)
-
-
-A kernel function ("compute shader" in OpenGL jargon) will process a number of pixels (specified by the programmer) in parallel whereas a fragment function will process one pixel at a time. As such pixel shaders have a highly restricted parallel programming model in which each fragment is computed completely independently of every other fragment. Resources can not be shared between each invocation of the fragment shader function.
+A shader written by Inigo Quilez. The original shader code was ported to Metal by writing a pair of vertex-fragment functions. 
 
 
 
