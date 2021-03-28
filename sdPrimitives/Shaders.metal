@@ -1,5 +1,3 @@
-//https://www.shadertoy.com/view/XsB3Rm
-
 #include <metal_stdlib>
 
 using namespace metal;
