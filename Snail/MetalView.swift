@@ -24,7 +24,6 @@ class MetalView: MTKView, NSWindowDelegate {
 
     required init(coder: NSCoder) {
         super.init(coder: coder)
-        self.device = device
         guard let metalGPU = MTLCreateSystemDefaultDevice()
         else {
             fatalError("No Metal-aware GPU available")
